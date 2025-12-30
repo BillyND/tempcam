@@ -35,6 +35,50 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ settings, onNavigate
     });
   }, [isRecording]); // Refresh when recording stops
 
+  const generatePhotoThumbnail = async (blob: Blob): Promise<string> => {
+    // Convert photo blob to data URL for persistent thumbnail
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        // Create a smaller thumbnail version
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxSize = 320;
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > height) {
+            if (width > maxSize) {
+              height = (height * maxSize) / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = (width * maxSize) / height;
+              height = maxSize;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.7));
+          } else {
+            resolve(result); // Fallback to original if canvas fails
+          }
+        };
+        img.onerror = () => resolve(result); // Fallback to original
+        img.src = result;
+      };
+      reader.onerror = () => resolve(''); // Empty string on error
+      reader.readAsDataURL(blob);
+    });
+  };
+
   const handleCapture = async () => {
     if (mode === 'PHOTO') {
         // Flash effect
@@ -46,7 +90,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ settings, onNavigate
 
         const blob = await takePhoto();
         if (blob) {
-            const thumb = URL.createObjectURL(blob); // Temporary
+            const thumb = await generatePhotoThumbnail(blob); // Data URL instead of blob URL
             const item: MediaItem = {
                 id: crypto.randomUUID(),
                 type: 'photo',

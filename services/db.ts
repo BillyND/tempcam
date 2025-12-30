@@ -77,6 +77,49 @@ export class DBService {
     });
   }
 
+  private async generatePhotoThumbnail(blob: Blob): Promise<string> {
+    return new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        // Create smaller thumbnail
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxSize = 320;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxSize) {
+              height = (height * maxSize) / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = (width * maxSize) / height;
+              height = maxSize;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg", 0.7));
+          } else {
+            resolve(result); // Fallback to original
+          }
+        };
+        img.onerror = () => resolve(result); // Fallback
+        img.src = result;
+      };
+      reader.onerror = () => resolve(""); // Empty on error
+      reader.readAsDataURL(blob);
+    });
+  }
+
   async getMedia(): Promise<MediaItem[]> {
     return new Promise((resolve, reject) => {
       if (!this.db) return reject("DB not initialized");
@@ -84,7 +127,7 @@ export class DBService {
       const store = transaction.objectStore(STORE_MEDIA);
       const request = store.getAll();
 
-      request.onsuccess = () => {
+      request.onsuccess = async () => {
         const rawItems = request.result as any[];
 
         // Reconstruct Blob from ArrayBuffer with proper error handling
@@ -119,6 +162,23 @@ export class DBService {
               continue;
             }
 
+            // Regenerate thumbnailUrl for photos if missing or is blob URL (invalid after reload)
+            let thumbnailUrl = item.thumbnailUrl;
+            if (item.type === "photo") {
+              if (!thumbnailUrl || thumbnailUrl.startsWith("blob:")) {
+                // Generate data URL thumbnail from blob
+                try {
+                  thumbnailUrl = await this.generatePhotoThumbnail(blob);
+                } catch (error) {
+                  console.error(
+                    "===> Error generating photo thumbnail:",
+                    error
+                  );
+                  thumbnailUrl = ""; // Empty if generation fails
+                }
+              }
+            }
+
             items.push({
               id: item.id,
               type: item.type,
@@ -126,7 +186,7 @@ export class DBService {
               mimeType:
                 item.mimeType ||
                 (item.type === "video" ? "video/mp4" : "image/jpeg"),
-              thumbnailUrl: item.thumbnailUrl,
+              thumbnailUrl: thumbnailUrl,
               duration: item.duration || 0,
               size: item.size || blob.size,
               createdAt: item.createdAt,
