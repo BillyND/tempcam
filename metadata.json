@@ -1,0 +1,8 @@
+{
+  "name": "TempCam",
+  "description": "Ứng dụng quay video tạm thời, tự động xóa sau một khoảng thời gian. Tối ưu cho di động.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
