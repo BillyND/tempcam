@@ -35,7 +35,7 @@ export const MediaViewer: React.FC<MediaViewerProps> = ({ item, onClose, onDelet
 
   return (
     <>
-        <div className="fixed inset-0 z-50 bg-black flex flex-col animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 bg-black flex flex-col animate-in fade-in duration-200" style={{ height: '100dvh' }}>
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-black/50 absolute top-0 left-0 right-0 z-10 backdrop-blur-sm">
             <div className="flex flex-col">
@@ -52,7 +52,7 @@ export const MediaViewer: React.FC<MediaViewerProps> = ({ item, onClose, onDelet
         </div>
 
         {/* Content */}
-        <div className="flex-1 flex items-center justify-center bg-black overflow-hidden">
+        <div className="flex-1 flex items-center justify-center bg-black overflow-hidden" style={{ minHeight: 0 }}>
             {item.type === 'video' ? (
                 <video src={url} controls autoPlay className="max-h-full max-w-full" playsInline />
             ) : (

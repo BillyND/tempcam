@@ -22,7 +22,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onUpdateSe
   };
 
   return (
-    <div className="flex flex-col h-full bg-black text-white">
+    <div className="flex flex-col h-full bg-black text-white" style={{ height: '100dvh' }}>
       {/* Header */}
       <div className="h-14 flex items-center px-4 border-b border-gray-800 bg-black/90">
         <button onClick={onBack} className="flex items-center text-blue-500 font-medium">
@@ -32,7 +32,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onUpdateSe
         <h1 className="flex-1 text-center font-bold pr-8">Cài đặt</h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6" style={{ minHeight: 0 }}>
         {/* Resolution */}
         <section>
             <h2 className="text-xs uppercase text-gray-500 font-bold mb-2 ml-2">Độ phân giải</h2>

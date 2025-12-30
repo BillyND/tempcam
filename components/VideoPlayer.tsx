@@ -34,7 +34,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onClose, onDele
   const minsLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-black flex flex-col animate-in fade-in duration-200" style={{ height: '100dvh' }}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-black/50 absolute top-0 left-0 right-0 z-10 backdrop-blur-sm">
          <div className="flex flex-col">
@@ -51,7 +51,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onClose, onDele
       </div>
 
       {/* Player */}
-      <div className="flex-1 flex items-center justify-center bg-black">
+      <div className="flex-1 flex items-center justify-center bg-black" style={{ minHeight: 0 }}>
         <video 
             src={videoUrl} 
             controls 

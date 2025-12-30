@@ -186,7 +186,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ settings, onNavigate
   };
 
   return (
-    <div className="relative h-full w-full bg-black overflow-hidden flex flex-col">
+    <div className="relative h-full w-full bg-black overflow-hidden flex flex-col" style={{ height: '100dvh' }}>
        {/* Flash Overlay */}
        <div id="flash-overlay" className="absolute inset-0 bg-white opacity-0 pointer-events-none z-50 transition-opacity duration-100" />
 
@@ -200,7 +200,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ settings, onNavigate
        />
 
        {/* Viewport */}
-       <div className="relative flex-1 bg-black overflow-hidden flex items-center justify-center">
+       <div className="relative flex-1 bg-black overflow-hidden flex items-center justify-center" style={{ minHeight: 0 }}>
           {error && (
             <div className="text-white text-center p-4">
                 <p className="mb-4">{error}</p>
