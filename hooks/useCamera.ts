@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { AppSettings, RESOLUTIONS } from '../types';
+import { requestCameraAccess } from '../services/permissions';
 
 export const useCamera = (settings: AppSettings) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -39,7 +40,8 @@ export const useCamera = (settings: AppSettings) => {
         }
       };
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      // Use permission-aware request function
+      const stream = await requestCameraAccess(constraints);
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
